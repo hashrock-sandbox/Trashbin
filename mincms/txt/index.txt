@@ -1,0 +1,11 @@
+About
+-------------
+
+* This is TEST PAGE of minCMS.
+* Type '1234' to Edit page
+* Password is 'test'
+
+Pages
+------
+
+* [test](test)

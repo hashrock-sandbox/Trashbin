@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<title>Meteor Code Generator</title>
+	<link href="assets/css/bootstrap.min.css"  rel='stylesheet' type='text/css'>
+	<link href="assets/css/bootstrap-responsive.min.css"  rel='stylesheet' type='text/css'>
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<script src="assets/js/bootstrap.min.js"></script>
+	<script src="assets/js/mustache.js"></script>
+	<script>
+	function recompile(){
+		var param = {
+		    collection: $("#collection").val(),
+		    Collection: capitaliseFirstLetter($("#collection").val())
+		};
+		$("#result").val(Mustache.to_html($("#source").text(), param));
+		$("#resultHtml").val(Mustache.to_html($("#sourceHtml").text(), param).replace(/\[/g, "{").replace(/\]/g, "}"));
+	}
+	function capitaliseFirstLetter(string)
+	{
+	    return string.charAt(0).toUpperCase() + string.slice(1);
+	}
+	$(function(){
+		recompile();
+		/*$("#collection").keyup(function(){
+			recompile();
+		});*/
+		$("#collection").change(function(){
+			recompile();
+		});
+
+	});
+    
+
+	</script>
+	<style type="text/css">
+	body{
+		margin-top: 20px;
+	}
+	h2{
+		margin-top: 20px;
+	}
+	</style>
+</head>
+<body>
+	<div class="container">
+	<h1>Meteor Code Generator</h1>
+		<h2>パラメータ</h2>
+		<div class="well" id="hello">
+			コレクション名 <input id="collection" value="players"/><br>
+		</div>
+		<h2>app.js</h2>
+		<div>
+			<textarea id="result" class="span12" rows=20>
+			</textarea>
+		</div>
+		<h2>app.html</h2>
+		<div>
+			<textarea id="resultHtml" class="span12" rows=20>
+			</textarea>
+		</div>
+	</div>
+	
+	<pre id="source" style="display: none">
+{{Collection}} = new Meteor.Collection("{{collection}}");
+if (Meteor.isClient) {
+	Template.leaderboard.{{collection}} = function () {
+		return {{Collection}}.find({}, {sort: {score: -1, name: 1}});
+	};
+
+	Template.leaderboard.selected_name = function () {
+		var {{collection}} = {{Collection}}.findOne(Session.get("selected_{{collection}}"));
+		return {{collection}} &amp;&amp; {{collection}}.name;
+	};
+
+	Template.{{collection}}.selected = function () {
+		return Session.equals("selected_{{collection}}", this._id) ? "selected" : '';
+	};
+
+	Template.leaderboard.events({
+		'click input.inc': function () {
+			{{Collection}}.update(Session.get("selected_{{collection}}"), {$inc: {score: 5}});
+		}
+	});
+
+	Template.{{collection}}.events({
+		'click': function () {
+			Session.set("selected_{{collection}}", this._id);
+		}
+	});
+}
+
+if (Meteor.isServer) {
+	Meteor.startup(function () {
+		if ({{Collection}}.find().count() === 0) {
+			var names = ["Ada Lovelace",
+				 "Grace Hopper",
+				 "Marie Curie",
+				 "Carl Friedrich Gauss",
+				 "Nikola Tesla",
+				 "Claude Shannon"];
+			for (var i = 0; i &lt; names.length; i++)
+				{{Collection}}.insert({name: names[i], score: Math.floor(Math.random()*10)*5});
+		}
+	});
+}
+</pre>
+
+<pre id="sourceHtml" style="display: none">
+&lt;head&gt;
+  &lt;title&gt;Application&lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+  &lt;div id=&quot;outer&quot;&gt;
+    [[&gt; leaderboard]]
+  &lt;/div&gt;
+&lt;/body&gt;
+
+&lt;template name=&quot;leaderboard&quot;&gt;
+  &lt;div class=&quot;leaderboard&quot;&gt;
+    [[#each players]]
+      [[&gt; player]]
+    [[/each]]
+  &lt;/div&gt;
+
+  [[#if selected_name]]
+  &lt;div class=&quot;details&quot;&gt;
+    &lt;div class=&quot;name&quot;&gt;[[selected_name]]&lt;/div&gt;
+    &lt;input type=&quot;button&quot; class=&quot;inc&quot; value=&quot;Give 5 points&quot; /&gt;
+  &lt;/div&gt;
+  [[/if]]
+
+  [[#unless selected_name]]
+  &lt;div class=&quot;none&quot;&gt;Click a player to select&lt;/div&gt;
+  [[/unless]]
+&lt;/template&gt;
+
+&lt;template name=&quot;player&quot;&gt;
+  &lt;div class=&quot;player [[selected]]&quot;&gt;
+    &lt;span class=&quot;name&quot;&gt;[[name]]&lt;/span&gt;
+    &lt;span class=&quot;score&quot;&gt;[[score]]&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
+</pre>
+			
+</body>
+</html>

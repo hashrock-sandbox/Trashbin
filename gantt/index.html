@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	
+	<style>
+		#gantt{
+			background: #EEE;
+		}
+	</style>
+	<link href="assets/css/bootstrap.min.css"  rel='stylesheet' type='text/css'>
+	<link href="assets/css/bootstrap-responsive.min.css"  rel='stylesheet' type='text/css'>
+	<script src="assets/js/jquery.js"></script>
+	<script src="assets/js/bootstrap.min.js"></script>
+	<script>
+//方針
+//データはPaintモードで持ち、Lineモードで描画する
+//テキストデータはidxに紐付ける
+
+
+		var gridWidth = 15;
+		var gridHeight = 20;
+		
+		var data = [[0, 20, 25], [1, 24, 28], [2, 12, 13]];
+
+		function drawDot(ctx){
+			ctx.lineWidth = 1;
+			for(var i = 0 ; i < data.length; i++){
+				var idx = data[i][0];
+				var start = data[i][1];
+				var end = data[i][2];
+				ctx.strokeStyle = 'rgb(0,0,0)';
+				var grad  = ctx.createLinearGradient(0, idx * gridHeight,0, (idx + 1) * 20);
+				grad.addColorStop(0,'rgb(200, 200, 200)');
+				grad.addColorStop(0.2,'rgb(210, 210, 210)');
+				grad.addColorStop(0.21,'rgb(190, 190, 190)');
+				grad.addColorStop(1,'rgb(150, 150, 150)');
+				ctx.fillStyle = grad;
+				ctx.fillRect( start * gridWidth, idx * gridHeight, (end - start) * gridWidth, gridHeight); 
+				ctx.strokeRect( start * gridWidth, idx * gridHeight, (end - start) * gridWidth, gridHeight); 
+				ctx.fill();
+				ctx.stroke();
+
+				ctx.fillStyle = 'rgb(0,0,0)';
+				ctx.fillText("Sample", start * gridWidth + 3 , (idx + 1) * gridHeight - 3);  
+			}
+		}
+
+		function drawGrid(ctx){
+			for(var i = 0; i < 100; i++){
+				ctx.strokeStyle = 'rgb(200,200,200)';
+				ctx.beginPath();
+				ctx.moveTo(0, i * gridHeight);
+				ctx.lineTo(1500, i * gridHeight);
+				ctx.stroke();
+				ctx.closePath();
+			}
+			for(var i = 0; i < 100; i++){
+			    ctx.beginPath();
+				ctx.moveTo(i * gridWidth, 0);
+				ctx.lineTo(i * gridWidth, 800);
+				ctx.stroke();
+				ctx.closePath();
+			}
+		}
+		
+		function getPoint(pos){
+			return {x: Math.floor(pos.x / gridWidth), y:  Math.floor(pos.y / gridHeight)} ;
+		}
+
+		function getMousePos(canvas, evt) {
+			var rect = canvas.getBoundingClientRect();
+			return {
+				x: evt.clientX - rect.left,
+				y: evt.clientY - rect.top
+			};
+		}
+
+		function redraw(canvas){
+			if (canvas.getContext) {
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				drawGrid(ctx);
+				drawDot(ctx);
+			}
+		}
+
+		var start = -1;
+		var mouseLeftDown = false;
+		var ctx;
+		$(function(){
+			var gantt = $('#gantt');
+			var canvas = gantt[0];
+			ctx = canvas.getContext('2d');
+			redraw(canvas);
+			
+			gantt.mousedown(function(e){
+				var mousePosition = getPoint(getMousePos(canvas, e));
+				data.push([mousePosition.y, mousePosition.x, mousePosition.x+1]);
+				redraw(canvas);
+				mouseLeftDown = true;
+			});
+
+			gantt.mousemove(function(e){
+				if(mouseLeftDown){
+					var mousePosition = getPoint(getMousePos(canvas, e));
+					data.push([mousePosition.y, mousePosition.x, mousePosition.x+1]);
+					redraw(canvas);
+				}
+			});
+
+			gantt.mouseup(function(e){
+				mouseLeftDown = false;
+			});
+
+		});
+
+	</script>
+</head>
+<body>
+<div>
+	<canvas id="gantt" width=1500 height=800></canvas>
+</div>
+</body>
+</html>

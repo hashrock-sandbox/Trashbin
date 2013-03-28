@@ -1,0 +1,113 @@
+/*
+
+  MinCMS 2011.05.10
+
+*/
+
+h1 a{
+	font-family: 'Gabriela', arial, serif; 
+	font-size: 300%;
+	color: #000;
+}
+
+h2 { font-family: 'Gabriela', arial, serif;
+	font-size: 150%;
+	color: #339966
+}
+
+hr {
+   border-width: 2px 0px 0px 0px;
+   border-style: dotted;
+   border-color: #DDD;
+   height: 1px;
+}
+
+
+html{
+	min-height: 100%;
+	overflow: auto;
+	position:relative;
+	z-index: 1;
+	background: #fff;
+}
+
+body{
+	min-height: 100%;
+	margin: 0;
+	padding: 0;
+	overflow: auto;
+	position: relative;
+	z-index: 1;
+}
+
+body > #wrapper{
+	height: auto;
+	overflow: auto;
+	position: fixed;
+	z-index: 1;
+	width: 100%;
+	height:100%;
+	min-height:100%;
+}
+
+canvas{
+	z-index: 1;
+	position: fixed;
+}
+
+#contents{
+	position: relative;
+	z-index: 5;
+	margin: 60px;
+}
+
+#footer{
+font-size: 70%;
+color: #aaa;
+}
+#links {
+	margin-top: 40px;
+}
+ 
+#links ul {
+	list-style-type: none;
+	width: 80%;
+}
+ 
+#links li {
+	border: 1px dotted #999;
+	border-width: 1px 0;
+	background: #fff;
+	margin: 5px 0;
+}
+ 
+#links li a {
+	color: #000000;
+	display: block;
+	font-family: 'Gabriela', arial, serif; 
+	font-size: 130%;
+	padding: 10px;
+	text-decoration: none;
+}
+ 
+* html #links li a {
+	width: 80%;
+}
+ 
+#links li a:hover {
+	background: #EEEEEE;
+}
+ 
+#links a em {
+	color: #333;
+	display: block;
+	font: normal 70% Verdana, Arial, Helvetica, sans-serif;
+	line-height: 135%;
+}
+ 
+#links a span {
+	color: #DDD;
+	font: normal 60% Verdana, Arial, Helvetica, sans-serif;
+	line-height: 135%;
+}
+ 
